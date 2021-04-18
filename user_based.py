@@ -6,12 +6,34 @@ review = pd.read_csv(r"C:\\Users\\Devi Prajwala B S\\Downloads\\recommenders\\re
 
 
 
-def pearsons_measure ( review, new_user ):
+def pearsons_measure ( review, new_user, no_of_attributes, no_of_users ):
     '''function to calculate the pearson's similarity measure which is needed to determine the closely related users i.e whose likes and dislikes
     follow the same pattern '''
     mean_of_each_users = review.mean(axis = 1)
     #the mean value of ratings of each of the user is calculated which is further needed for the calculation of similarity measure
-    print(mean_of_each_users)
+    #print(mean_of_each_users)
+
+    mean = 0 
+    for count,value in enumerate(new_user):
+        mean = mean + value
+    new_user_mean = mean / (count+1) 
+    #print(mean)
+    
+    #s = review.loc[0].iat[0]
+    #print(s)
+
+    for i in range (no_of_users):
+        #for j in range (1,no_of_attributes+1):
+            for count,value in enumerate( new_user ):
+                r_user_p = review.loc[i].iat[count+1]
+                numerator = ( float(value) - new_user_mean ) * ( float(r_user_p) - mean_of_each_users[i])
+                #denominator = sqrt( ( value - new_user_mean ) * ( value - new_user_mean ) ) + sqrt( ( ( r_user_p - mean_of_each_users[i]) ) * ( ( r_user_p - mean_of_each_users[i]) ) )
+                print(numerator)
+               
+
+
+    
+
 
 new=[1,2,3,4,5,6,7,8,9,10]
-pearsons_measure ( review,new )
+pearsons_measure ( review, new, 10, 4 )
