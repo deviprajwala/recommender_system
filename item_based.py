@@ -25,21 +25,30 @@ def mean_adjusted_matrix( rating, no_of_attributes, no_of_users ):
 def similarity(rate, items, users):
     listi=[]
     simili=[]
-    for i in range(items):
-        for j in range(users):
-            if(i != j and j > i and i == 0 and j == 4):
-                for k in range(items):
-                    numerator += rate[i][k] * rate[j][k]
-                    denominator1 += pow(rate[i][k],2)
-                    denominator2 += pow(rate[j][k],2)
+    numerator = 0
+    denominator1 = denominator2 = 0
+    
+    for i in range(users):
+        for j in range(1,items):
+            if(i != j ):
+                for k in range(users):
+                    #print(i,j,k)
+                    numerator += rate[k][i] * rate[k][j]
+                    denominator1 += pow(rate[k][i],2)
+                    denominator2 += pow(rate[k][j],2)
+                    
+                        
+                   
 
                 simi = numerator / ( math.sqrt(denominator1) * math.sqrt(denominator2))
                 listi.append(simi)
                 listi.append(i)
                 listi.append(j)
-                print(listi)
+                #print(listi)
                 simili.append(listi)
                 print(simili)
+                numerator = denominator1 = denominator2 = 0
+                listi.clear()
     return simili
 
                 
@@ -48,5 +57,7 @@ def similarity(rate, items, users):
 def cosine_similarity_measure(rating, attributes, users):
     rate = mean_adjusted_matrix(rating, attributes, users)
     simili = similarity(rate, attributes, users)
-    print(simili)
+    #print(simili)
+    #print(rate)
+    #print(rate[0][1])
 cosine_similarity_measure(rating, 5, 4)
