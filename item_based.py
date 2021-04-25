@@ -22,42 +22,49 @@ def mean_adjusted_matrix( rating, no_of_attributes, no_of_users ):
 
     return rate
 
-def similarity(rate, items, users):
-    listi=[]
-    simili=[]
+def similarity(rate, items, users,simili):
     numerator = 0
     denominator1 = denominator2 = 0
-    
-    for i in range(users):
-        for j in range(1,items):
-            if(i != j ):
+    check_list=[ ]
+    for i in range(items):
+        for j in range(users):
+            a=[]
+            a.append(i)
+            a.append(j)
+            print(check_sublist(a,check_list))
+            if(i != j and check_sublist(a,check_list)):
                 for k in range(users):
                     #print(i,j,k)
                     numerator += rate[k][i] * rate[k][j]
+                    #print(numerator, "=" ,rate[k][i], "*" ,rate[k][j] )
                     denominator1 += pow(rate[k][i],2)
-                    denominator2 += pow(rate[k][j],2)
-                    
-                        
-                   
-
+                    denominator2 += pow(rate[k][j],2)                                              
                 simi = numerator / ( math.sqrt(denominator1) * math.sqrt(denominator2))
-                listi.append(simi)
-                listi.append(i)
-                listi.append(j)
+                #print(simi,numerator,denominator1,denominator2)
+                check_list.append([i,j])
+                print(check_list)
                 #print(listi)
-                simili.append(listi)
-                print(simili)
+                simili.append([simi,i,j])
+                #print(simili)
                 numerator = denominator1 = denominator2 = 0
-                listi.clear()
+                
+    print(check_list)
     return simili
 
-                
-    #print(rate[0][0])
+def check_sublist(a,check_list):
+    for i in check_list:
+        if(i[0]==a[0] and i[1]==a[1]):
+            return True
+        return False
+    
 
 def cosine_similarity_measure(rating, attributes, users):
+    simili=[]
     rate = mean_adjusted_matrix(rating, attributes, users)
-    simili = similarity(rate, attributes, users)
+    simili = similarity(rate, attributes, users, simili)
     #print(simili)
     #print(rate)
-    #print(rate[0][1])
+    a=[1,2]
+    #check_list = [[1,2],[2,3]]
+    #check_sublist(a,check_list)
 cosine_similarity_measure(rating, 5, 4)
