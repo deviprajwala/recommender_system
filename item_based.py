@@ -1,6 +1,7 @@
 #user based recommnder system
 import pandas as pd 
 import math
+import matplotlib.pyplot as plt
 rating = pd.read_csv(r"C:\\Users\\Devi Prajwala B S\\Downloads\\recommenders\\recommender_systems\\item_rating.csv")
 #rating.iat[1,4] = rating.iat[1,4].astype(float)
 #no_of_attributes = input( " Enter the number of attributes " )
@@ -71,7 +72,27 @@ def predict(matrix):
              item1 = i[1]
              item2 = i[2]
     print("item", item1+1,"and item" , item2+1, "are in cloooj simiarity!!!")
-    
+
+def plot_graph(simili):
+    x = []
+    y = []
+    a = 'item'
+    for i in simili:
+        y.append(i[0])
+        a += str(i[1]+1)
+        a += str(i[2]+1)
+        x.append(a)
+        a ='item'
+    print(x)
+    print(y)
+    plt.plot(x,y)
+    plt.grid()
+    plt.xlabel('items')
+    plt.ylabel('similarity')
+    plt.title('graph showing similarity of items')
+    plt.scatter(x, y, c='red')
+    plt.show()
+
 def cosine_similarity_measure(rating, attributes, users):
     simili=[]
     rate = mean_adjusted_matrix(rating, attributes, users)
@@ -83,4 +104,5 @@ def cosine_similarity_measure(rating, attributes, users):
     #print(check_sublist(a,check_list))
 
     predict(simili)
+    plot_graph(simili)
 cosine_similarity_measure(rating, 5, 4)
