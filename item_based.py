@@ -5,27 +5,20 @@ import matplotlib.pyplot as plt
 rating = pd.read_csv(r"C:\\Users\\Devi Prajwala B S\\Downloads\\recommenders\\recommender_systems\\item_rating.csv")
 #rating.iat[1,4] = rating.iat[1,4].astype(float)
 #no_of_attributes = input( " Enter the number of attributes " )
-
-mean_of_each_users = rating.mean(axis = 1)
 #print(rating)
 
 def mean_adjusted_matrix( rating, no_of_attributes, no_of_users ):
-    '''for i in range(no_of_users):
-        for j in range(1,no_of_attributes+1):
-            rating.loc[i].iat[j] = float(rating.loc[i].iat[j]) - mean_of_each_users[i]
-            #print(i,j)'''
-
     rating.drop ('Users', axis='columns', inplace=True)
     rate = rating.transpose(copy = 'True')  
     #print(rate)
     for x in rate.columns:
         rate[x] = rate[x] - rate[x].mean()
-
     return rate
 
 def similarity(rate, items, users,simili):
     numerator = 0
-    denominator1 = denominator2 = 0
+    denominator1 = 0
+    denominator2 = 0
     check_list=[ ]
     for i in range(items):
         for j in range(users):
@@ -52,7 +45,9 @@ def similarity(rate, items, users,simili):
                 #print(listi)
                 simili.append([simi,i,j])
                 #print(simili)
-                numerator = denominator1 = denominator2 = 0
+                numerator = 0
+                denominator1 = 0
+                denominator2 = 0
                 
     #print(check_list)
     return simili
@@ -63,7 +58,7 @@ def check_sublist(a,check_list):
             return True
     return False
     
-def predict(matrix):
+def predict(matrix, new):
     max_similarity = matrix[0][0]
     item1 = item2 = 0
     for i in matrix:
@@ -72,6 +67,28 @@ def predict(matrix):
              item1 = i[1]
              item2 = i[2]
     print("item", item1+1,"and item" , item2+1, "are in cloooj simiarity!!!")
+    print("enter the item for which prediction has to be made")
+    item = int(input( ))
+    item -= 1
+    new.insert(item, 0)
+    #print(matrix)
+    numerator = 0
+    denominator = 0
+    print(new)
+    for i in matrix:
+        if(i[1] == item or i[2] == item):
+            if(i[1] != item):
+                rating_item = i[1]
+            else:
+                rating_item = i[2]
+            #print(rating_item)
+            numerator += abs(i[0] * new[rating_item])
+            print(numerator,"=",i[0],"*",new[rating_item])
+            denominator += abs(i[0])
+    
+    prediction = numerator/ denominator
+
+    print("The  predicted rating of the user is",prediction, "The user may like the item!!" if prediction>=2.5 else "The user may not like the item")       
 
 def plot_graph(simili):
     x = []
@@ -83,17 +100,18 @@ def plot_graph(simili):
         a += str(i[2]+1)
         x.append(a)
         a ='item'
-    print(x)
-    print(y)
+    #print(x)
+    #print(y)
     plt.plot(x,y)
     plt.grid()
     plt.xlabel('items')
     plt.ylabel('similarity')
     plt.title('graph showing similarity of items')
     plt.scatter(x, y, c='red')
-    plt.show()
+    #plt.show()
 
-def cosine_similarity_measure(rating, attributes, users):
+
+def cosine_similarity_measure(rating, attributes, users, new):
     simili=[]
     rate = mean_adjusted_matrix(rating, attributes, users)
     simili = similarity(rate, attributes, users, simili)
@@ -103,6 +121,9 @@ def cosine_similarity_measure(rating, attributes, users):
     #a=[2,3]
     #print(check_sublist(a,check_list))
 
-    predict(simili)
+   
     plot_graph(simili)
-cosine_similarity_measure(rating, 5, 4)
+    predict(simili,new)
+
+new_user = [1,3,3,5]
+cosine_similarity_measure(rating, 5, 4, new_user)
