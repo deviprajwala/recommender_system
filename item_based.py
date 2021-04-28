@@ -1,8 +1,13 @@
-#user based recommnder system
+# implementation of the user based recommnder system
+
+import pdb
 import pandas as pd 
 import math
 import matplotlib.pyplot as plt
-rating = pd.read_csv(r"C:\\Users\\Devi Prajwala B S\\Downloads\\recommenders\\recommender_systems\\item_rating.csv")
+#we have imported few packages which include pandas math and matplotlib
+
+#pdb.set_trace()
+rating = pd.read_csv(r"C:\\Users\\Devi Prajwala B S\\Downloads\\recommenders\\recommender_systems\\google review ratings.csv")
 #rating.iat[1,4] = rating.iat[1,4].astype(float)
 #no_of_attributes = input( " Enter the number of attributes " )
 #print(rating)
@@ -21,14 +26,14 @@ def similarity(rate, items, users,simili):
     denominator2 = 0
     check_list=[ ]
     for i in range(items):
-        for j in range(users):
+        for j in range(items):
             a=[]
             x=max(i,j)
             y=min(i,j)
             a.append(x)
             a.append(y)
 
-
+            #print(rate)
             if(i != j and not check_sublist(a,check_list)):
                 for k in range(users):
                     #print(i,j,k)
@@ -108,7 +113,7 @@ def plot_graph(simili):
     plt.ylabel('similarity')
     plt.title('graph showing similarity of items')
     plt.scatter(x, y, c='red')
-    #plt.show()
+    plt.show()
 
 
 def cosine_similarity_measure(rating, attributes, users, new):
@@ -125,5 +130,5 @@ def cosine_similarity_measure(rating, attributes, users, new):
     plot_graph(simili)
     predict(simili,new)
 
-new_user = [1,3,3,5]
-cosine_similarity_measure(rating, 5, 4, new_user)
+new_user = [1,3,3,5,4,3,3,2,1]
+cosine_similarity_measure(rating, 10, 5456, new_user)
