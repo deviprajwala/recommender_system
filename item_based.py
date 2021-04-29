@@ -90,7 +90,7 @@ def check_sublist( a, check_list ):
             return True
     return False
     
-def predict( matrix, new ):
+def predict( matrix, new, attributes ):
     '''here the function is about making the prediction of the rating of the item which is not seen by the user by making use of the cosine similarity
     which was computed earlier. The concept of weighted average mean is used for making the prediction where weight is the similarity measure'''
 
@@ -108,9 +108,15 @@ def predict( matrix, new ):
     item = int( input( ) )
     #the item for which the raing has to be predicted is taken as input
 
+    
+    if(item > int(attributes) or item == 0):
+        #if the entered item is zero or larger than the available set
+        print("Enter the value less than ", attributes, "and greater than 0")
+        return
+    
     item -= 1
     #the item number is decreased by one since in our program item number starts from zero
-
+    
     new.insert( item, 0 )
     #0 is inserted for the item which is unseen by the user
 
@@ -194,10 +200,10 @@ def cosine_similarity_measure(rating, attributes, users, new):
     simili = similarity(rate, attributes, users, simili)
     #function to calculate the similarity measure between the items
 
-    plot_graph(simili)
+    #plot_graph(simili)
     #function to plot the graph
 
-    predict(simili,new)
+    predict(simili, new, attributes)
     #function to predict the value of the rating for the unseen item
 
 #new_user = [1,3,3,5,4,3,3,2,1]
