@@ -18,10 +18,10 @@ def mean_adjusted_matrix( rating, no_of_attributes, no_of_users ):
     to reduce the error which caused by the users as some tend to give very high ratings most of the time and some tend to give very low ratings most of 
     the time. So to reduce this inconsistency we subtract the mean value from each of tthe user'''
 
-    rating.drop ('Users', axis='columns', inplace=True)
+    rating.drop ( 'Users', axis='columns', inplace=True )
     #to drop the first column from the dataframe
 
-    rate = rating.transpose(copy = 'True')  
+    rate = rating.transpose( copy = 'True' )  
     #to obtain the transpose of the rating matrix
 
     for x in rate.columns:
@@ -31,50 +31,69 @@ def mean_adjusted_matrix( rating, no_of_attributes, no_of_users ):
     return rate
     #return the mean adjusted matrix
 
-def similarity(rate, items, users,simili):
+def similarity( rate, items, users, simili ):
+    '''This function is for the calculation of the similarity measure between the items, here we make use of the cosine similarity matrix. We also
+    check for the repetition of the items i.e similarity between item A and B is same as that of between item B and A , so we perform the computation
+    on the above condition only once'''
+
     numerator = 0
     denominator1 = 0
     denominator2 = 0
     check_list=[ ]
-    for i in range(items):
-        for j in range(items):
-            a=[]
-            x=max(i,j)
-            y=min(i,j)
-            a.append(x)
-            a.append(y)
+    #initial assignment of the values to the variables
 
-            #print(rate)
-            if(i != j and not check_sublist(a,check_list)):
-                for k in range(users):
-                    #print(i,j,k)
+    for i in range( items ):
+        for j in range( items ):
+            a = []
+            x = max( i, j )
+            y = min( i, j )  
+            a.append( x )
+            a.append( y )
+            '''here the two item are appended to the list a to check whether the similarity for the pair is computed earlier or not. Here we follow
+            the pattern of max item number first and min item number second for the uniformity in checking''' 
+            
+            if(i != j and not check_sublist ( a, check_list ) ):
+                #above condition loop if for the checking of item pairs
+
+                for k in range( users ):
                     numerator += rate[k][i] * rate[k][j]
-                    #print(numerator, "=" ,rate[k][i], "*" ,rate[k][j] )
-                    denominator1 += pow(rate[k][i],2)
-                    denominator2 += pow(rate[k][j],2)                                              
-                simi = numerator / ( math.sqrt(denominator1) * math.sqrt(denominator2))
-                #print(simi,numerator,denominator1,denominator2)
-                x=max(i,j)
-                y=min(i,j)
-                check_list.append([x,y])
-                #print(check_list)
-                #print(listi)
-                simili.append([simi,i,j])
-                #print(simili)
+                    denominator1 += pow( rate[k][i], 2 )
+                    denominator2 += pow( rate[k][j], 2 )
+                    
+                simi = numerator / ( math.sqrt(denominator1) * math.sqrt(denominator2) )
+                '''the above computational operations are based on the formula of cosine similarity. The ratings of different users on two items are
+                multiplied in the numerator and in the denominator the ratings are squared and summation is calculated for each. After getting the
+                summation values they are divided to get the similarity measure'''
+
+                x = max( i, j )
+                y = min( i, j )
+                check_list.append( [x, y] )
+                #the two items for which the similarity measure is calculated is appended to the list named check_list
+
+                simili.append( [simi, i, j] )
+                #the similarity measure , item1 and item2 are appended to the list named simili which is needed for further computation
+
                 numerator = 0
                 denominator1 = 0
                 denominator2 = 0
-                
-    #print(check_list)
-    return simili
+                #reinitialisation of variables for the further calculation
 
-def check_sublist(a,check_list):
+    return simili
+    #list named simili is returned
+
+
+def check_sublist( a, check_list ):
+    '''this function is for checking whether the list 'a' is the sublist of the 'checklist' or not if yes it returns true else it returns false'''
     for i in check_list:
-        if(i[0]==a[0] and i[1]==a[1]):
+        if( i[0] == a[0] and i[1] == a[1]):
+            #checking whether the elements of the list are same or not if yes returns true else returns false
             return True
     return False
     
-def predict(matrix, new):
+def predict( matrix, new ):
+    '''here the function is about making the prediction of the rating of the item which is not seen by the user by making use of the cosine similarity
+    which was computed earlier. The concept of weighted average mean is used for making the prediction where weight is the similarity measure'''
+
     ''' max_similarity = matrix[0][0]
     item1 = item2 = 0
     for i in matrix:
@@ -82,70 +101,106 @@ def predict(matrix, new):
              max_similarity = max( max_similarity, i[0])
              item1 = i[1]
              item2 = i[2]
-    print("item", item1+1,"and item" , item2+1, "are in cloooj simiarity!!!")
-    to find the items which has highest similarity'''
+    print("item", item1+1,"and item" , item2+1, "are in cloooj simiarity!!!")'''
+    #to find the items which has highest similarity
 
     print("Enter the item for which prediction has to be made")
-    item = int(input( ))
+    item = int( input( ) )
+    #the item for which the raing has to be predicted is taken as input
+
     item -= 1
-    new.insert(item, 0)
-    #print(matrix)
+    #the item number is decreased by one since in our program item number starts from zero
+
+    new.insert( item, 0 )
+    #0 is inserted for the item which is unseen by the user
+
     numerator = 0
     denominator = 0
-    #print(new)
+    #initialisation of the variables with the value zero
+
     for i in matrix:
-        if(i[1] == item or i[2] == item):
-            if(i[1] != item):
+        if( i[1] == item or i[2] == item ):
+            if( i[1] != item ):
                 rating_item = i[1]
             else:
                 rating_item = i[2]
-            #print(rating_item)
+            
             numerator += abs(i[0] * new[rating_item])
-            #print(numerator,"=",i[0],"*",new[rating_item])
             denominator += abs(i[0])
-    
+
     prediction = numerator/ denominator
+    '''the above lines of code deal with calculation of weighted mean. rating is multiplied by the weight in numerator and summation is calculated for
+    both numerator and denominator'''
 
     print("The  predicted rating of the user is",prediction, "The user may like the item!!" if prediction>=2.5 else "The user may not like the item")       
+    #calculated value is printed on the screen and if the rating is greater than 2.5 the user may like th item or else he may not like the item
 
 def plot_graph(simili):
+    '''this function if for plotting the graph of items and thier similarity, here the two items are along the xaxis and similarity measure is taken
+    along the y axis'''
+
     x = []
     y = []
     #a = 'item'
-    a=''
-    for i in simili:
-        y.append(i[0])
-        a += str(i[1]+1)
-        a += ','
-        a += str(i[2]+1)
-        x.append(a)
-        #a ='item'
-        a=''
-    #print(x)
-    #print(y)
-    plt.plot(x,y)
-    plt.figtext(.8, .8, "1,2 here means similarity\n between item 1 and 2")
-    plt.grid()
-    plt.xlabel('items')
-    plt.ylabel('similarity')
-    plt.title('graph showing similarity of items')
-    plt.scatter(x, y, c='red')
-    plt.show()
+    a = ''
+    #initialisation of the list and the string
 
+    for i in simili:
+        y.append( i[0] )
+        #similarity values are appended to the list y
+
+        a += str( i[1] + 1 )
+        a += ','
+        a += str( i[2] + 1 )
+        x.append(a)
+        '''the two items are taken as strings and added and these values are appended to the list x, the item values are incremented by 1 as the item
+        number begins from zero in our program'''
+        #a ='item'
+        a = ''
+        #reinitialisation of string
+
+    plt.plot(x,y)
+    #for plotting the graph
+
+    plt.figtext(.8, .8, "1,2 here means similarity\n between item 1 and 2")
+    #for the text which is on the top right corner
+
+    plt.grid()
+    #for the presence of grid in the graph
+
+    plt.xlabel('items')
+    #for the label along the x axis
+
+    plt.ylabel('similarity')
+    #for the label along the y axis
+
+    plt.title('graph showing similarity of items')
+    #for the title of the graph
+
+    plt.scatter(x, y, c='red')
+    #to highlight the points in red color
+
+    plt.show()
+    #to display the graph
 
 def cosine_similarity_measure(rating, attributes, users, new):
+    #this function calls the necessary function in the order which is necessary for the item based recommendation 
     simili=[]
+    #list for storing the similarity measure and items
+
     rate = mean_adjusted_matrix(rating, attributes, users)
+    #function is calculated for the computation of mean adjusted matrix
+
     simili = similarity(rate, attributes, users, simili)
-    #print(simili)
-    #print(rate)
-    #check_list = [[1,2],[2,3]]
-    #a=[2,3]
-    #print(check_sublist(a,check_list))
+    #function to calculate the similarity measure between the items
 
-   
     plot_graph(simili)
-    predict(simili,new)
+    #function to plot the graph
 
-new_user = [1,3,3,5,4,3,3,2,1]
-cosine_similarity_measure(rating, 10, 5456, new_user)
+    predict(simili,new)
+    #function to predict the value of the rating for the unseen item
+
+#new_user = [1,3,3,5,4,3,3,2,1]
+#cosine_similarity_measure(rating, 10, 5456, new_user)
+''' this is how the function has to be called for the implementation of the item based similarity, rating the dataframe, 10 is the number of items,
+5456 is the number of users and new_user is the list containing the rating for the nine items'''
