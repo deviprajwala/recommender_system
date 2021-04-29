@@ -200,7 +200,7 @@ def cosine_similarity_measure(rating, attributes, users, new):
     simili = similarity(rate, attributes, users, simili)
     #function to calculate the similarity measure between the items
 
-    #plot_graph(simili)
+    plot_graph(simili)
     #function to plot the graph
 
     predict(simili, new, attributes)
